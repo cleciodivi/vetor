@@ -83,34 +83,56 @@
     <!-- ══════════ CORPO: TOOLBOX / SUPERFÍCIE / PALETA ══════════ -->
     <div class="corpo-corel">
 
-        <!-- Toolbox vertical -->
+        <!-- Toolbox vertical — grupos/nomes conforme a ajuda oficial do CorelDRAW -->
         <div class="toolbox" role="toolbar" aria-label="Caixa de ferramentas">
-            <button class="tx ativa" title="Seletor (V)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 3l13 7.5-5.6 1.2 3 6.6-2.6 1.2-3-6.7L6 16.6z"/></svg></button>
-            <button class="tx" title="Forma (F10) — editar nós"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 18C4 10 10 6 12 6s8 4 8 12" stroke-linecap="round"/><rect x="2.2" y="16.2" width="3.6" height="3.6"/><rect x="18.2" y="16.2" width="3.6" height="3.6"/></svg><i class="fly"></i></button>
-            <button class="tx" title="Cortar (C)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3v12a6 6 0 0 0 12 0V3M4 3h8M12 3h8" stroke-linecap="round"/></svg></button>
-            <button class="tx" title="Zoom (Z)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/></svg><i class="fly"></i></button>
+            <!-- Ferramentas Seleção -->
+            <button class="tx ativa" title="Seleção (V) — selecionar, dimensionar, inclinar e girar objetos"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 3l13 7.5-5.6 1.2 3 6.6-2.6 1.2-3-6.7L6 16.6z"/></svg></button>
+            <!-- Ferramentas Editar forma -->
+            <button class="tx" title="Forma (F10) — editar a forma dos objetos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 18C4 10 10 6 12 6s8 4 8 12" stroke-linecap="round"/><rect x="2.2" y="16.2" width="3.6" height="3.6"/><rect x="18.2" y="16.2" width="3.6" height="3.6"/></svg><i class="fly"></i></button>
+            <!-- Ferramentas Cortar -->
+            <button class="tx" title="Cortar (C) — remover áreas indesejadas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3v12a6 6 0 0 0 12 0V3M4 3h8M12 3h8" stroke-linecap="round"/></svg><i class="fly"></i></button>
+            <!-- Ferramentas Zoom -->
+            <button class="tx" title="Zoom (Z) — alterar o nível de ampliação"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/></svg><i class="fly"></i></button>
             <span class="tx-sep"></span>
-            <button class="tx" title="Mão livre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 17c3-8 7-10 9-8s1 5 3 5 3-2 4-4" stroke-linecap="round"/></svg></button>
-            <button class="tx" title="Linha de 2 pontos"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 19L19 5"/><circle cx="5" cy="19" r="1.6" fill="currentColor"/><circle cx="19" cy="5" r="1.6" fill="currentColor"/></svg></button>
-            <button class="tx" title="Caneta Bézier"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18z"/><circle cx="11" cy="11" r="2"/></svg><i class="fly"></i></button>
-            <button class="tx" title="Mídia artística"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 18c4-2 8-8 12-12m0 0l4 4M16 6l2-2"/></svg></button>
-            <button class="tx" title="Cotas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 8v12h16"/><path d="M4 16l16-8" stroke-dasharray="2 2"/></svg><i class="fly"></i></button>
-            <button class="tx" title="Conectores"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/><path d="M9 6h6a3 3 0 0 1 3 3v6" stroke-linecap="round"/></svg><i class="fly"></i></button>
+            <!-- Ferramentas Curva -->
+            <button class="tx" title="Mão livre — desenhar curvas e segmentos de linha únicos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 17c3-8 7-10 9-8s1 5 3 5 3-2 4-4" stroke-linecap="round"/></svg><i class="fly"></i></button>
+            <button class="tx" title="Linha de 2 pontos — segmento de linha reta"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 19L19 5"/><circle cx="5" cy="19" r="1.6" fill="currentColor"/><circle cx="19" cy="5" r="1.6" fill="currentColor"/></svg></button>
+            <button class="tx" title="Bézier (B) — desenhar curvas, um segmento de cada vez"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 16C6 8 12 4 20 4"/><rect x="2.2" y="14.2" width="3.6" height="3.6"/><rect x="18.2" y="2.2" width="3.6" height="3.6"/></svg><i class="fly"></i></button>
+            <button class="tx" title="Caneta (P) — desenhar curvas, um segmento por vez"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18z"/><circle cx="11" cy="11" r="2"/></svg></button>
+            <button class="tx" title="Polilinha — desenhar linhas e curvas no modo de visualização"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18L9 6l5 12 3-9 3 6" /></svg><i class="fly"></i></button>
+            <!-- Ferramenta Mídia artística -->
+            <button class="tx" title="Mídia artística — Predefinição, Pincel, Espalhador, Caligráfico e Pressão"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 18c4-2 8-8 12-12m0 0l4 4M16 6l2-2"/></svg><i class="fly"></i></button>
             <span class="tx-sep"></span>
+            <!-- Ferramentas Dimensão -->
+            <button class="tx" title="Dimensão — linhas de dimensão paralela, horizontal/vertical, angular e de segmento"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 8v12h16"/><path d="M4 16l16-8" stroke-dasharray="2 2"/></svg><i class="fly"></i></button>
+            <!-- Ferramentas Conector -->
+            <button class="tx" title="Conector — linha reta, ângulo reto, redondo e editar ancoragem"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/><path d="M9 6h6a3 3 0 0 1 3 3v6" stroke-linecap="round"/></svg><i class="fly"></i></button>
+            <span class="tx-sep"></span>
+            <!-- Ferramentas Retângulo / Elipse / Objeto -->
             <button class="tx" title="Retângulo (F6)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="6" width="16" height="12" rx="1"/></svg><i class="fly"></i></button>
             <button class="tx" title="Elipse (F7)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="12" rx="8" ry="6"/></svg><i class="fly"></i></button>
-            <button class="tx" title="Polígono (Y)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l3.5 7 7 .5-5.5 4.5 2 7-6.5-4.5L6 22l2-7-5.5-4.5 7-.5z" opacity=".9"/></svg><i class="fly"></i></button>
-            <button class="tx" title="Grade (A)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h16v16H4z"/><path d="M4 9h16M4 14h16M9 4v16M14 4v16" opacity=".55"/></svg><i class="fly"></i></button>
-            <button class="tx" title="Formas básicas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 18L12 4l8 14z"/><circle cx="17" cy="17" r="3.2"/></svg><i class="fly"></i></button>
+            <button class="tx" title="Polígono (Y) — estrelas e polígonos simétricos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l3.5 7 7 .5-5.5 4.5 2 7-6.5-4.5L6 22l2-7-5.5-4.5 7-.5z" opacity=".9"/></svg><i class="fly"></i></button>
+            <button class="tx" title="Papel gráfico — grade de linhas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h16v16H4z"/><path d="M4 9h16M4 14h16M9 4v16M14 4v16" opacity=".55"/></svg><i class="fly"></i></button>
+            <button class="tx" title="Espiral"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 12a2.5 2.5 0 1 0 5 0 5 5 0 1 0-10 0 7.5 7.5 0 1 0 15 0 10 10 0 1 0-20 0"/></svg><i class="fly"></i></button>
+            <button class="tx" title="Formas básicas — hexagrama, rosto sorridente, triângulo retângulo…"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 18L12 4l8 14z"/><circle cx="17" cy="17" r="3.2"/></svg><i class="fly"></i></button>
             <span class="tx-sep"></span>
-            <button class="tx" title="Texto (F8)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 6V4h14v2M12 4v16M9 20h6"/></svg></button>
-            <button class="tx" title="Tabela"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="1"/><path d="M3 10h18M3 15h18M9 5v14"/></svg></button>
+            <!-- Ferramentas de Texto e Tabela -->
+            <button class="tx" title="Texto (F8) — texto artístico ou de parágrafo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 6V4h14v2M12 4v16M9 20h6"/></svg></button>
+            <button class="tx" title="Tabela — desenhar e editar tabelas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="1"/><path d="M3 10h18M3 15h18M9 5v14"/></svg></button>
             <span class="tx-sep"></span>
+            <!-- Ferramentas interativas -->
+            <button class="tx" title="Sombreamento — aplicar um sombreamento"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="9" r="5"/><path d="M14 20c3 0 6-2 6-6 0-2-1-4-2-5" opacity=".8"/><path d="M10 20h10" opacity=".6"/></svg></button>
+            <button class="tx" title="Mistura — misturar dois objetos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="7" cy="7" r="4"/><circle cx="17" cy="17" r="4"/><path d="M9.5 9.5L14.5 14.5" stroke-dasharray="2 2" stroke-linecap="round"/></svg><i class="fly"></i></button>
+            <button class="tx" title="Transparência — aplicar transparências aos objetos"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="1"/><path d="M4 20L20 4" stroke-linecap="round" opacity=".5"/><path d="M10 20l10-10v10z" fill="currentColor" opacity=".35" stroke="none"/></svg></button>
+            <span class="tx-sep"></span>
+            <!-- Ferramentas Conta-gotas -->
+            <button class="tx" title="Conta-gotas de cores (I) — copiar uma cor de um objeto"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 9l3 3 5-5a2.1 2.1 0 0 0-3-3l-5 5z"/><path d="M11 11l-6 6a2 2 0 0 0-.5.9L4 20l2.1-.5a2 2 0 0 0 .9-.5l6-6z"/></svg><i class="fly"></i></button>
+            <!-- Ferramentas Preenchimento interativo -->
             <button class="tx" title="Preenchimento interativo (G)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="1"/><path d="M4 20L20 4" stroke-linecap="round"/><circle cx="17" cy="17" r="2" fill="currentColor" stroke="none"/><circle cx="7" cy="7" r="2" fill="currentColor" stroke="none"/></svg><i class="fly"></i></button>
-            <button class="tx" title="Transparência interativa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="1"/><path d="M4 20L20 4" stroke-linecap="round" opacity=".5"/><path d="M10 20l10-10v10z" fill="currentColor" opacity=".35" stroke="none"/></svg></button>
-            <button class="tx" title="Conta-gotas (I)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 9l3 3 5-5a2.1 2.1 0 0 0-3-3l-5 5z"/><path d="M11 11l-6 6a2 2 0 0 0-.5.9L4 20l2.1-.5a2 2 0 0 0 .9-.5l6-6z"/></svg><i class="fly"></i></button>
             <span class="tx-sep"></span>
-            <button class="tx" title="Contorno (F12)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="5" width="14" height="14" rx="1" stroke-width="3.5"/></svg><i class="fly"></i></button>
+            <!-- Ferramentas Contorno / Preenchimento (flyouts de diálogo) -->
+            <button class="tx" title="Contorno (F12) — caneta de contorno e cor do contorno"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="5" width="14" height="14" rx="1" stroke-width="3.5"/></svg><i class="fly"></i></button>
+            <button class="tx" title="Preenchimento — caixas de diálogo de preenchimento"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6.8 3.5h10.4L20 10l-8 10.5L4 10z" stroke-linejoin="round"/></svg><i class="fly"></i></button>
         </div>
 
         <!-- Superfície com réguas e página -->
