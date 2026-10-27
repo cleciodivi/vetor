@@ -475,9 +475,119 @@
         if (ferr) definirFerramenta(ferr);
     });
 
+    /* ---------- Camadas (painel) ---------- */
+    const NOMES_TIPO = { retangulo: 'Retângulo', elipse: 'Elipse', linha: 'Linha', texto: 'Texto' };
+
+    function nomeDaCamada(f) {
+        if (f.nome) return f.nome;
+        if (f.tipo === 'texto') return 'Texto: ' + (f.texto || '').slice(0, 14);
+        return NOMES_TIPO[f.tipo] || f.tipo;
+    }
+
+    function corDaCamada(f) {
+        if (f.tipo === 'linha') return f.semContorno ? (f.fundo || '#3b82f6') : (f.contorno || '#26251f');
+        return f.semFundo ? 'transparent' : (f.fundo || '#3b82f6');
+    }
+
+    function renderizarCamadas() {
+        const lista = $('#lista_camadas');
+        lista.replaceChildren();
+        // Do topo para o fundo (como editores gráficos)
+        [...Editor.estado.formas].reverse().forEach(f => {
+            const item = document.createElement('li');
+            item.className = 'camada' + (Editor.estado.selecao === f.id ? ' ativa' : '') + (f.oculta ? ' oculta' : '');
+            item.dataset.id = f.id;
+
+            const icone = document.createElement('span');
+            icone.className = 'camada-icone';
+            icone.style.background = corDaCamada(f);
+
+            const nome = document.createElement('span');
+            nome.className = 'camada-nome';
+            nome.textContent = nomeDaCamada(f);
+            nome.title = 'Duplo clique para renomear';
+
+            const olho = document.createElement('button');
+            olho.className = 'camada-olho';
+            olho.textContent = f.oculta ? '🚫' : '👁';
+            olho.title = f.oculta ? 'Mostrar' : 'Ocultar';
+            olho.setAttribute('aria-label', (f.oculta ? 'Mostrar ' : 'Ocultar ') + nomeDaCamada(f));
+            olho.addEventListener('click', ev => {
+                ev.stopPropagation();
+                Editor.definirVisibilidade(f.id, !!f.oculta);
+                Editor.registrarMudanca();
+            });
+
+            item.append(icone, nome, olho);
+            item.addEventListener('click', () => Editor.selecionar(f.id));
+            item.addEventListener('dblclick', () => {
+                nome.contentEditable = 'true';
+                nome.focus();
+                document.getSelection().selectAllChildren(nome);
+            });
+            nome.addEventListener('blur', () => {
+                nome.contentEditable = 'false';
+                Editor.renomearForma(f.id, nome.textContent.trim());
+                if (!f.nome) nome.textContent = nomeDaCamada(f);
+                Editor.registrarMudanca();
+            });
+            nome.addEventListener('keydown', ev => {
+                if (ev.key === 'Enter') { ev.preventDefault(); nome.blur(); }
+                if (ev.key === 'Escape') { nome.textContent = nomeDaCamada(f); nome.blur(); }
+            });
+            lista.appendChild(item);
+        });
+        atualizarAcoesCamadas();
+    }
+
+    function atualizarAcoesCamadas() {
+        const temSelecao = !!Editor.estado.selecao;
+        $('#camadas_acoes').hidden = !temSelecao;
+        if (!temSelecao) return;
+        const id = Editor.estado.selecao;
+        const f = Editor.formaSelecionada();
+        $('#bt_camada_visivel').textContent = f.oculta ? '🚫' : '👁';
+        // Desabilita ordem impossível
+        const indice = Editor.estado.formas.findIndex(x => x.id === id);
+        const total = Editor.estado.formas.length;
+        $$('#camadas_acoes [data-ordem]').forEach(b => {
+            const ordem = b.dataset.ordem;
+            const impossivel = (ordem === 'topo' && indice === total - 1)
+                || (ordem === 'fundo' && indice === 0)
+                || (ordem === 'frente' && indice === total - 1)
+                || (ordem === 'tras' && indice === 0);
+            b.disabled = !!impossivel;
+        });
+    }
+
+    // (a lista de camadas é re-renderizada a cada documento; nenhum listener global necessário)
+
+    $$('#camadas_acoes [data-ordem]').forEach(b => {
+        b.addEventListener('click', () => {
+            if (Editor.moverFormaNaOrdem(Editor.estado.selecao, b.dataset.ordem)) {
+                Editor.registrarMudanca();
+            }
+        });
+    });
+
+    $('#bt_camada_visivel').addEventListener('click', () => {
+        const f = Editor.formaSelecionada();
+        if (!f) return;
+        Editor.definirVisibilidade(f.id, !!f.oculta);
+        Editor.registrarMudanca();
+    });
+
+    $('#bt_camada_remover').addEventListener('click', () => {
+        if (Editor.removerSelecionada()) {
+            Editor.registrarMudanca();
+            toast('Forma removida');
+        }
+    });
+
     /* ---------- Reações do modelo ---------- */
     Editor.onChange((evento) => {
         if (evento === 'selecao') atualizarPainel();
+        if (evento === 'documento' || evento === 'selecao') renderizarCamadas();
         renderizar();
     });
 

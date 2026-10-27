@@ -12,6 +12,10 @@
   <img src="docs/preview.png" alt="Editor VETOR em funcionamento" width="720">
 </p>
 
+<p align="center">
+  <img src="docs/camadas.png" alt="Painel de camadas com reordenação e visibilidade" width="420">
+</p>
+
 > Feito para quem quer desenhar logos, cartões e diagramas rápidos sem abrir um software pesado. Abre no navegador, desenha, exporta SVG ou PNG.
 
 ---
@@ -34,6 +38,8 @@ Editores vetoriais são ou pagos e pesados (CorelDRAW, Illustrator) ou complexos
 | Elipse (E) | Arraste para criar |
 | Linha (L) | Clique e arraste entre dois pontos |
 | Texto (T) | Clique e escreva (edição no painel) |
+| Redimensionar | Arraste as alças de canto da forma selecionada |
+| Camadas | Lista de objetos: renomear, ocultar, reordenar (⤓↓↑⤒) |
 | Zoom | Roda do mouse (ancora no cursor) |
 | Mover tela (H) | Arraste a área de desenho |
 | Desfazer/Refazer | Ctrl+Z / Ctrl+Y (até 60 passos) |
@@ -76,9 +82,9 @@ vetor/
 ## Roadmap
 
 - [x] MVP: formas, seleção, mover, cores, zoom/pan, exportar SVG/PNG
+- [x] Redimensionar pela alça da seleção
+- [x] Camadas (lista de objetos, reordenar, ocultar)
 - [ ] Caneta com curvas Bézier + edição de nós
-- [ ] Redimensionar pela alça da seleção
-- [ ] Camadas (lista de objetos, reordenar, ocultar)
 - [ ] Grade, guias e alinhamentos
 - [ ] Agrupar/desagrupar
 - [ ] Copiar/colar/duplicar (Ctrl+C/V/D)

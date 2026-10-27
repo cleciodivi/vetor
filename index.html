@@ -99,6 +99,20 @@
                 <label class="mini">Tamanho da fonte<input type="number" id="prop_fonte" value="24" min="4" step="1"></label>
             </section>
 
+            <section class="painel-grupo">
+                <h3>Camadas</h3>
+                <ul class="camadas" id="lista_camadas"></ul>
+                <div class="camadas-acoes" id="camadas_acoes" hidden>
+                    <button class="bt-mini" data-ordem="fundo" title="Enviar para o fundo">⤓</button>
+                    <button class="bt-mini" data-ordem="tras" title="Uma camada atrás">↓</button>
+                    <button class="bt-mini" data-ordem="frente" title="Uma camada à frente">↑</button>
+                    <button class="bt-mini" data-ordem="topo" title="Trazer para o topo">⤒</button>
+                    <span class="sep2"></span>
+                    <button class="bt-mini" id="bt_camada_visivel" title="Mostrar/ocultar">👁</button>
+                    <button class="bt-mini" id="bt_camada_remover" title="Remover forma">🗑</button>
+                </div>
+            </section>
+
             <p class="painel-vazio" id="painel_vazio">Nada selecionado.<br>Desenhe uma forma para editar.</p>
         </aside>
     </div>

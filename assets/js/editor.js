@@ -218,6 +218,41 @@ const Editor = (() => {
         if (f.tipo === 'linha') { f.x2 += dx; f.y2 += dy; }
     }
 
+    // ---------- Camadas ----------
+    // Ordem de profundidade = ordem no array formaNoPonto/etiqueta (último em cima).
+    function moverFormaNaOrdem(id, direcao) {
+        // direcao: 'frente' | 'tras' | 'topo' | 'fundo'
+        const indice = estado.formas.findIndex(f => f.id === id);
+        if (indice < 0) return false;
+        let destino;
+        if (direcao === 'topo') destino = estado.formas.length - 1;
+        else if (direcao === 'fundo') destino = 0;
+        else if (direcao === 'frente') destino = Math.min(estado.formas.length - 1, indice + 1);
+        else if (direcao === 'tras') destino = Math.max(0, indice - 1);
+        else return false;
+        if (destino === indice) return false;
+        const [forma] = estado.formas.splice(indice, 1);
+        estado.formas.splice(destino, 0, forma);
+        notificar('documento');
+        return true;
+    }
+
+    function definirVisibilidade(id, visivel) {
+        const f = formaPorId(id);
+        if (!f) return false;
+        f.oculta = !visivel;
+        notificar('documento');
+        return true;
+    }
+
+    function renomearForma(id, nome) {
+        const f = formaPorId(id);
+        if (!f) return false;
+        f.nome = String(nome || '').slice(0, 60);
+        notificar('documento');
+        return true;
+    }
+
     // ---------- Zoom e pan ----------
     function definirZoom(z, centroX, centroY) {
         const novo = Math.min(8, Math.max(0.1, Number(z) || 1));
@@ -271,7 +306,7 @@ const Editor = (() => {
     }
 
     function exportarSvg() {
-        const linhas = estado.formas.map(etiquetaForma);
+        const linhas = estado.formas.filter(f => !f.oculta).map(etiquetaForma);
         return [
             '<?xml version="1.0" encoding="UTF-8"?>',
             '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600">',
@@ -320,9 +355,11 @@ const Editor = (() => {
     }
 
     function formaNoPonto(docX, docY, tolerancia) {
-        // De cima para baixo (última desenhada primeiro)
+        // De cima para baixo (última desenhada primeiro); ocultas são ignoradas
         for (let i = estado.formas.length - 1; i >= 0; i--) {
-            if (acertouForma(estado.formas[i], docX, docY, tolerancia)) return estado.formas[i];
+            const f = estado.formas[i];
+            if (f.oculta) continue;
+            if (acertouForma(f, docX, docY, tolerancia)) return f;
         }
         return null;
     }
@@ -375,6 +412,7 @@ const Editor = (() => {
         definirX, definirY, definirLargura, definirAltura,
         definirFundo, definirContorno, definirEspessura, definirTexto,
         moverSelecionada, redimensionarSelecionada, calcularRedimensionamento,
+        moverFormaNaOrdem, definirVisibilidade, renomearForma,
         definirZoom, definirPan, paraDocumento,
         exportarSvg, caixa, formaNoPonto,
         registrarMudanca, desfazer, refazer

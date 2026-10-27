@@ -169,5 +169,58 @@ const texto2 = Editor.formaSelecionada();
 check('resize texto recusa', Editor.redimensionarSelecionada('se', 100, 40) === false);
 check('resize texto intacto', (() => { const c = Editor.caixa(texto2); return c.w === 24 && c.h === 20; })());
 
+/* Camadas: reordenação */
+function resetTresFormas() {
+    Editor.limpar('cd');
+    Editor.registrarMudanca();
+    Editor.criarForma({ tipo: 'retangulo', x: 0, y: 0, w: 50, h: 50, fundo: '#a', semContorno: true });   // [0]
+    Editor.criarForma({ tipo: 'elipse', x: 10, y: 10, w: 50, h: 50, fundo: '#b', semContorno: true });    // [1]
+    Editor.criarForma({ tipo: 'linha', x: 0, y: 0, x2: 200, y2: 200, espessura: 2, semFundo: true, contorno: '#c' }); // [2]
+    return Editor.estado.formas.map(f => f.tipo);
+}
+
+let ordem = resetTresFormas();
+check('ordem inicial', ordem.join(',') === 'retangulo,elipse,linha');
+// A última em cima: clicar na zona comum pega a linha
+check('seleção respeita profundidade', Editor.formaNoPonto(80, 80, 5).tipo === 'linha');
+const idLinha = Editor.estado.formas[2].id;
+const idRet = Editor.estado.formas[0].id;
+check('mover frente', Editor.moverFormaNaOrdem(idRet, 'frente'));
+check('ordem apos frente', Editor.estado.formas.map(f => f.tipo).join(',') === 'elipse,retangulo,linha');
+check('mover tras', Editor.moverFormaNaOrdem(idRet, 'tras'));
+check('ordem apos tras', Editor.estado.formas.map(f => f.tipo).join(',') === 'retangulo,elipse,linha');
+check('mover topo', Editor.moverFormaNaOrdem(idRet, 'topo'));
+check('ordem apos topo', Editor.estado.formas.map(f => f.tipo).join(',') === 'elipse,linha,retangulo');
+check('mover fundo', Editor.moverFormaNaOrdem(idRet, 'fundo'));
+check('ordem apos fundo', Editor.estado.formas.map(f => f.tipo).join(',') === 'retangulo,elipse,linha');
+check('id inexistente = false', Editor.moverFormaNaOrdem('zzz', 'topo') === false);
+check('direção inválida = false', Editor.moverFormaNaOrdem(idRet, 'lado') === false);
+
+/* Camadas: visibilidade */
+Editor.limpar('v'); Editor.registrarMudanca();
+Editor.criarForma({ tipo: 'retangulo', x: 0, y: 0, w: 50, h: 50, fundo: '#a', semContorno: true });
+const fVis = Editor.estado.formas[0];
+check('visível por padrão', fVis.oculta !== true);
+Editor.definirVisibilidade(fVis.id, false);
+check('oculta aplicada', fVis.oculta === true);
+check('oculta não é selecionável por ponto', Editor.formaNoPonto(25, 25, 5) === null);
+Editor.definirVisibilidade(fVis.id, true);
+check('reaparece e selelcciona', Editor.formaNoPonto(25, 25, 5) === fVis);
+
+/* Ocultas saem do SVG exportado */
+Editor.definirVisibilidade(fVis.id, false);
+check('oculta fora do svg', !Editor.exportarSvg().includes('<rect'));
+Editor.definirVisibilidade(fVis.id, true);
+check('visível volta ao svg', Editor.exportarSvg().includes('<rect'));
+
+/* Renomear forma */
+Editor.limpar('n'); Editor.registrarMudanca();
+Editor.criarForma({ tipo: 'retangulo', x: 0, y: 0, w: 10, h: 10, fundo: '#fff', semContorno: true });
+const fNome = Editor.estado.formas[0];
+Editor.renomearForma(fNome.id, 'Logotipo');
+check('renomeia', fNome.nome === 'Logotipo');
+Editor.renomearForma(fNome.id, 'x'.repeat(100));
+check('nome limitado a 60', fNome.nome.length === 60);
+
 console.log(`\n${pass} testes passaram, ${fail} falharam`);
 process.exit(fail > 0 ? 1 : 0);
