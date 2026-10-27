@@ -3,133 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="VETOR — Editor vetorial, direto no navegador. Formas, texto e cores em SVG, de graça.">
+    <meta name="description" content="VETOR — Editor vetorial no navegador.">
     <title>VETOR — Editor</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="assets/css/styles.css">
 </head>
 <body>
-    <header class="topbar">
-        <a href="index.html" class="logo" id="logo_vetor" title="Voltar à vitrine">VETOR</a>
-        <input type="text" id="nome_doc" class="nome-doc" value="sem-titulo" spellcheck="false" aria-label="Nome do arquivo">
-        <div class="topbar-acoes">
-            <button class="bt-ferr" id="bt_undo" title="Desfazer (Ctrl+Z)" aria-label="Desfazer">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>
-            </button>
-            <button class="bt-ferr" id="bt_redo" title="Refazer (Ctrl+Y)" aria-label="Refazer">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg>
-            </button>
-            <span class="sep"></span>
-            <button class="bt-acao" id="bt_novo">Novo</button>
-            <button class="bt-acao" id="bt_abrir">Abrir</button>
-            <button class="bt-acao" id="bt_salvar">Salvar</button>
-            <span class="sep"></span>
-            <button class="bt-acao primario" id="bt_exportar_svg">Exportar SVG</button>
-            <button class="bt-acao" id="bt_exportar_png">PNG</button>
-        </div>
-        <input type="file" id="abrir_arquivo" accept=".json,application/json" hidden>
-    </header>
 
-    <div class="corpo">
-        <!-- Ferramentas -->
-        <nav class="ferramentas" aria-label="Ferramentas de desenho">
-            <button class="bt-ferr ativa" data-ferramenta="selecionar" title="Selecionar (V)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M5 3l14 8-6 1.5L16 19l-3 1-3-6.5L5 17V3z"/></svg>
-            </button>
-            <button class="bt-ferr" data-ferramenta="retangulo" title="Retângulo (R)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="6" width="16" height="12" rx="1"/></svg>
-            </button>
-            <button class="bt-ferr" data-ferramenta="elipse" title="Elipse (E)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><ellipse cx="12" cy="12" rx="8" ry="6"/></svg>
-            </button>
-            <button class="bt-ferr" data-ferramenta="linha" title="Linha (L)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 19L19 5"/></svg>
-            </button>
-            <button class="bt-ferr" data-ferramenta="texto" title="Texto (T)">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 6V4h14v2M12 4v16M9 20h6"/></svg>
-            </button>
-            <button class="bt-ferr" data-ferramenta="caneta" title="Caneta (P) — cliques adicionam nós, Enter fecha, Esc cancela">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><circle cx="11" cy="11" r="2"/></svg>
-            </button>
-            <button class="bt-ferr" data-ferramenta="mao" title="Mover a tela (H) — ou arraste com o botão do meio">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 11V7a2 2 0 0 0-4 0M10 10V5a2 2 0 1 1 4 0v5m0-2a2 2 0 0 1 4 0v6a7 7 0 0 1-7 7h-1a7 7 0 0 1-7-7V9a2 2 0 0 1 4 0"/></svg>
-            </button>
-        </nav>
+    <!-- ══════════ BARRA DE MENUS ══════════ -->
+    <nav class="barra-menus" role="menubar" aria-label="Menu principal">
+        <a class="marca-mini" href="index.html" title="Voltar à vitrine">VETOR</a>
+        <span class="menu-item">Arquivo</span>
+        <span class="menu-item">Editar</span>
+        <span class="menu-item">Ver</span>
+        <span class="menu-item">Layout</span>
+        <span class="menu-item">Objetos</span>
+        <span class="menu-item">Efeitos</span>
+        <span class="menu-item">Bitmaps</span>
+        <span class="menu-item">Texto</span>
+        <span class="menu-item">Tabela</span>
+        <span class="menu-item">Ferramentas</span>
+        <span class="menu-item">Janela</span>
+        <span class="menu-item">Ajuda</span>
+        <span class="menu-item atalho-global" title="Quick start">⊕</span>
+    </nav>
 
-        <!-- Área de desenho -->
-        <div class="tela" id="tela">
-            <svg id="mesa" xmlns="http://www.w3.org/2000/svg" aria-label="Mesa de desenho">
-                <g id="conteudo"></g>
-                <g id="overlay"></g>
-            </svg>
+    <!-- ══════════ BARRA PADRÃO + BARRA DE PROPRIEDADES ══════════ -->
+    <div class="barras-superiores">
+        <!-- Barra padrão -->
+        <div class="toolbar" role="toolbar" aria-label="Barra padrão">
+            <button class="tb" title="Novo (Ctrl+N)"><svg viewBox="0 0 24 24"><path d="M12 4v16M4 12h16" stroke="currentColor" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg></button>
+            <button class="tb" title="Abrir (Ctrl+O)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 6a1 1 0 0 1 1-1h5l2 2h9a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6z"/></svg></button>
+            <button class="tb" title="Salvar (Ctrl+S)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 3h11l4 4v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M8 3v5h7V3M8 21v-7h8v7"/></svg></button>
+            <button class="tb" title="Imprimir (Ctrl+P)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 8V3h10v5M5 8h14a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-3v-3H8v3H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/></svg></button>
+            <span class="tb-sep"></span>
+            <button class="tb" title="Recortar (Ctrl+X)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="7" cy="18" r="2.4"/><circle cx="17" cy="18" r="2.4"/><path d="M8.5 16L18 4M15.5 16L6 4"/></svg></button>
+            <button class="tb" title="Copiar (Ctrl+C)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="8" y="8" width="12" height="12" rx="1.5"/><path d="M16 8V4a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v11a1 1 0 0 0 1 1h4"/></svg></button>
+            <button class="tb" title="Colar (Ctrl+V)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M9 4h6v3H9zM6 6h2v16h12a1 1 0 0 0 1-1V7l-2-3h-2M6 6v16H4a1 1 0 0 1-1-1V9l2-3z"/></svg></button>
+            <span class="tb-sep"></span>
+            <button class="tb" title="Desfazer (Ctrl+Z)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5M4 9h10a6 6 0 0 1 0 12h-3"/></svg></button>
+            <button class="tb" title="Refazer (Ctrl+Y)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 14l5-5-5-5M20 9H10a6 6 0 0 0 0 12h3"/></svg></button>
+            <span class="tb-sep"></span>
+            <button class="tb tb-larga" title="Nível de zoom">100% <small>▼</small></button>
+            <button class="tb" title="Reduzir"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5M8 11h6"/></svg></button>
+            <button class="tb" title="Ampliar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5M8 11h6M11 8v6"/></svg></button>
+            <button class="tb" title="Ajustar página na tela"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="16" rx="1"/><path d="M3 9h18"/><path d="M8 14l4 4 4-4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <span class="tb-sep"></span>
+            <button class="tb" title="Importar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 17v3h16v-3"/></svg></button>
+            <button class="tb" title="Exportar"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3m0 12l-4-4m4 4l4-4M4 17v3h16v-3"/></svg></button>
         </div>
 
-        <!-- Propriedades -->
-        <aside class="painel" aria-label="Propriedades">
-            <h2 class="painel-titulo">Propriedades</h2>
-
-            <section class="painel-grupo" id="grp_posicao">
-                <h3>Posição e tamanho</h3>
-                <div class="grade2">
-                    <label>X<input type="number" id="prop_x" step="1"></label>
-                    <label>Y<input type="number" id="prop_y" step="1"></label>
-                    <label>L<input type="number" id="prop_l" step="1" min="1"></label>
-                    <label>A<input type="number" id="prop_a" step="1" min="1"></label>
-                </div>
-            </section>
-
-            <section class="painel-grupo">
-                <h3>Preenchimento</h3>
-                <div class="cor-linha">
-                    <input type="color" id="prop_fundo" value="#3b82f6" aria-label="Cor de preenchimento">
-                    <label class="check"><input type="checkbox" id="prop_sem_fundo"> Sem preenchimento</label>
-                </div>
-            </section>
-
-            <section class="painel-grupo">
-                <h3>Contorno</h3>
-                <div class="cor-linha">
-                    <input type="color" id="prop_contorno" value="#26251f" aria-label="Cor do contorno">
-                    <label class="check"><input type="checkbox" id="prop_sem_contorno"> Sem contorno</label>
-                </div>
-                <label class="mini">Espessura<input type="number" id="prop_espessura" value="2" min="0.5" step="0.5"></label>
-            </section>
-
-            <section class="painel-grupo" id="grp_texto" hidden>
-                <h3>Texto</h3>
-                <textarea id="prop_texto" rows="2" spellcheck="false" placeholder="Conteúdo do texto"></textarea>
-                <label class="mini">Tamanho da fonte<input type="number" id="prop_fonte" value="24" min="4" step="1"></label>
-            </section>
-
-            <section class="painel-grupo">
-                <h3>Camadas</h3>
-                <ul class="camadas" id="lista_camadas"></ul>
-                <div class="camadas-acoes" id="camadas_acoes" hidden>
-                    <button class="bt-mini" data-ordem="fundo" title="Enviar para o fundo">⤓</button>
-                    <button class="bt-mini" data-ordem="tras" title="Uma camada atrás">↓</button>
-                    <button class="bt-mini" data-ordem="frente" title="Uma camada à frente">↑</button>
-                    <button class="bt-mini" data-ordem="topo" title="Trazer para o topo">⤒</button>
-                    <span class="sep2"></span>
-                    <button class="bt-mini" id="bt_camada_visivel" title="Mostrar/ocultar">👁</button>
-                    <button class="bt-mini" id="bt_camada_remover" title="Remover forma">🗑</button>
-                </div>
-            </section>
-
-            <p class="painel-vazio" id="painel_vazio">Nada selecionado.<br>Desenhe uma forma para editar.</p>
-        </aside>
+        <!-- Barra de propriedades (ferramenta Seletor) -->
+        <div class="toolbar propriedades" role="toolbar" aria-label="Barra de propriedades">
+            <button class="tb tb-larga" title="Tamanho da página">A4 <small>▼</small></button>
+            <span class="tb-sep"></span>
+            <label class="tb-campo" title="Posição X">X <input type="text" value="200,0" tabindex="-1"></label>
+            <label class="tb-campo" title="Posição Y">Y <input type="text" value="200,0" tabindex="-1"></label>
+            <span class="tb-sep"></span>
+            <label class="tb-campo" title="Largura"><svg class="mini-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h16M7 9l-3 3 3 3M17 9l3 3-3 3"/></svg> <input type="text" value="220,0" tabindex="-1"></label>
+            <label class="tb-campo" title="Altura"><svg class="mini-ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 4v16M9 7l3-3 3 3M9 17l3 3 3-3"/></svg> <input type="text" value="120,0" tabindex="-1"></label>
+            <button class="tb" title="Travar proporção"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="6" y="10" width="12" height="10" rx="1"/><path d="M9 10V8a3 3 0 0 1 6 0v2"/></svg></button>
+            <span class="tb-sep"></span>
+            <label class="tb-campo" title="Escala">Escala <input type="text" value="100,0 %" tabindex="-1"></label>
+            <label class="tb-campo" title="Rotação">↻ <input type="text" value="0,0" tabindex="-1"></label>
+            <span class="tb-sep"></span>
+            <button class="tb" title="Espelhar horizontalmente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v18" stroke-linecap="round"/><path d="M7 8L4 12l3 4M17 8l3 4-3 4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <button class="tb" title="Espelhar verticalmente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="transform:rotate(90deg)"><path d="M12 3v18" stroke-linecap="round"/><path d="M7 8L4 12l3 4M17 8l3 4-3 4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+            <span class="tb-sep"></span>
+            <button class="tb tb-larga" title="Espessura do contorno">2,0 pt <small>▼</small></button>
+            <button class="tb" title="Cor do contorno"><span class="swatch" style="background:#101014"></span></button>
+            <button class="tb" title="Cor de preenchimento"><span class="swatch" style="background:#3b82f6"></span></button>
+            <span class="tb-sep"></span>
+            <button class="tb" title="Enviar para frente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 20V7m0 0l-4 4m4-4l4 4"/></svg></button>
+            <button class="tb" title="Enviar para trás"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 4v13m0 0l-4-4m4 4l4-4"/></svg></button>
+        </div>
     </div>
 
-    <footer class="statusbar">
-        <span id="st_zoom">100%</span>
-        <span id="st_pos">x 0 · y 0</span>
-        <span id="st_formas">0 formas</span>
-        <span class="st-atalhos" title="Atalhos de ferramentas">V · R · E · L · T · H</span>
-    </footer>
+    <!-- ══════════ CORPO: TOOLBOX / SUPERFÍCIE / PALETA ══════════ -->
+    <div class="corpo-corel">
 
-    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+        <!-- Toolbox vertical -->
+        <div class="toolbox" role="toolbar" aria-label="Caixa de ferramentas">
+            <button class="tx ativa" title="Seletor (V)"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 3l13 7.5-5.6 1.2 3 6.6-2.6 1.2-3-6.7L6 16.6z"/></svg></button>
+            <button class="tx" title="Forma (F10) — editar nós"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 18C4 10 10 6 12 6s8 4 8 12" stroke-linecap="round"/><rect x="2.2" y="16.2" width="3.6" height="3.6"/><rect x="18.2" y="16.2" width="3.6" height="3.6"/></svg><i class="fly"></i></button>
+            <button class="tx" title="Cortar (C)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M6 3v12a6 6 0 0 0 12 0V3M4 3h8M12 3h8" stroke-linecap="round"/></svg></button>
+            <button class="tx" title="Zoom (Z)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/></svg><i class="fly"></i></button>
+            <span class="tx-sep"></span>
+            <button class="tx" title="Mão livre"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 17c3-8 7-10 9-8s1 5 3 5 3-2 4-4" stroke-linecap="round"/></svg></button>
+            <button class="tx" title="Linha de 2 pontos"><svg viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 19L19 5"/><circle cx="5" cy="19" r="1.6" fill="currentColor"/><circle cx="19" cy="5" r="1.6" fill="currentColor"/></svg></button>
+            <button class="tx" title="Caneta Bézier"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18z"/><circle cx="11" cy="11" r="2"/></svg><i class="fly"></i></button>
+            <button class="tx" title="Mídia artística"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 18c4-2 8-8 12-12m0 0l4 4M16 6l2-2"/></svg></button>
+            <button class="tx" title="Cotas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M4 8v12h16"/><path d="M4 16l16-8" stroke-dasharray="2 2"/></svg><i class="fly"></i></button>
+            <button class="tx" title="Conectores"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="6" height="6" rx="1"/><rect x="15" y="15" width="6" height="6" rx="1"/><path d="M9 6h6a3 3 0 0 1 3 3v6" stroke-linecap="round"/></svg><i class="fly"></i></button>
+            <span class="tx-sep"></span>
+            <button class="tx" title="Retângulo (F6)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="6" width="16" height="12" rx="1"/></svg><i class="fly"></i></button>
+            <button class="tx" title="Elipse (F7)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><ellipse cx="12" cy="12" rx="8" ry="6"/></svg><i class="fly"></i></button>
+            <button class="tx" title="Polígono (Y)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3l3.5 7 7 .5-5.5 4.5 2 7-6.5-4.5L6 22l2-7-5.5-4.5 7-.5z" opacity=".9"/></svg><i class="fly"></i></button>
+            <button class="tx" title="Grade (A)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 4h16v16H4z"/><path d="M4 9h16M4 14h16M9 4v16M14 4v16" opacity=".55"/></svg><i class="fly"></i></button>
+            <button class="tx" title="Formas básicas"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 18L12 4l8 14z"/><circle cx="17" cy="17" r="3.2"/></svg><i class="fly"></i></button>
+            <span class="tx-sep"></span>
+            <button class="tx" title="Texto (F8)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M5 6V4h14v2M12 4v16M9 20h6"/></svg></button>
+            <button class="tx" title="Tabela"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="5" width="18" height="14" rx="1"/><path d="M3 10h18M3 15h18M9 5v14"/></svg></button>
+            <span class="tx-sep"></span>
+            <button class="tx" title="Preenchimento interativo (G)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="1"/><path d="M4 20L20 4" stroke-linecap="round"/><circle cx="17" cy="17" r="2" fill="currentColor" stroke="none"/><circle cx="7" cy="7" r="2" fill="currentColor" stroke="none"/></svg><i class="fly"></i></button>
+            <button class="tx" title="Transparência interativa"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="1"/><path d="M4 20L20 4" stroke-linecap="round" opacity=".5"/><path d="M10 20l10-10v10z" fill="currentColor" opacity=".35" stroke="none"/></svg></button>
+            <button class="tx" title="Conta-gotas (I)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 9l3 3 5-5a2.1 2.1 0 0 0-3-3l-5 5z"/><path d="M11 11l-6 6a2 2 0 0 0-.5.9L4 20l2.1-.5a2 2 0 0 0 .9-.5l6-6z"/></svg><i class="fly"></i></button>
+            <span class="tx-sep"></span>
+            <button class="tx" title="Contorno (F12)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="5" y="5" width="14" height="14" rx="1" stroke-width="3.5"/></svg><i class="fly"></i></button>
+        </div>
 
-    <script src="assets/js/editor.js"></script>
-    <script src="assets/js/app.js"></script>
+        <!-- Superfície com réguas e página -->
+        <div class="superficie">
+            <div class="canto-regua"></div>
+            <div class="regua regua-h"></div>
+            <div class="regua regua-v"></div>
+            <div class="cena">
+                <div class="papel">
+                    <div class="lp" style="left:80px;top:110px;width:220px;height:120px;background:#3b82f6;border:2px solid #1e293b"></div>
+                    <div class="lp" style="left:300px;top:70px;width:120px;height:120px;background:transparent;border:2px solid #0f766e;border-radius:50%"></div>
+                    <span class="lp" style="left:80px;top:52px;font:600 22px Inter;color:#26251f">Texto</span>
+                    <div class="marcador-selecao">
+                        <span class="ms-a" style="left:-4px;top:-4px"></span><span class="ms-a" style="right:-4px;top:-4px"></span>
+                        <span class="ms-a" style="left:-4px;bottom:-4px"></span><span class="ms-a" style="right:-4px;bottom:-4px"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Paleta de cores vertical -->
+        <div class="paleta" role="toolbar" aria-label="Paleta de cores">
+            <button class="pc pc-none" title="Sem cor"><s>∅</s></button>
+            <button class="pc" style="background:#000" title="Preto"></button>
+            <button class="pc" style="background:#fff" title="Branco"></button>
+            <button class="pc" style="background:#d9d9d9" title="10% preto"></button>
+            <button class="pc" style="background:#a6a6a6" title="30% preto"></button>
+            <button class="pc" style="background:#595959" title="60% preto"></button>
+            <button class="pc" style="background:#e8000d" title="Vermelho"></button>
+            <button class="pc" style="background:#ff7e27" title="Laranja"></button>
+            <button class="pc" style="background:#ffd400" title="Amarelo"></button>
+            <button class="pc" style="background:#8fbf3f" title="Amarelo-esverdeado"></button>
+            <button class="pc" style="background:#007f01" title="Verde"></button>
+            <button class="pc" style="background:#00bf7f" title="Verde-ciano"></button>
+            <button class="pc" style="background:#01bfbf" title="Ciano"></button>
+            <button class="pc" style="background:#017fd3" title="Azul-ciano"></button>
+            <button class="pc" style="background:#0001c8" title="Azul"></button>
+            <button class="pc" style="background:#8000ff" title="Violeta"></button>
+            <button class="pc" style="background:#d001c8" title="Magenta"></button>
+            <button class="pc" style="background:#e84c78" title="Magenta-rosado"></button>
+            <button class="pc" style="background:#7d5a1c" title="Marrom"></button>
+            <button class="pc" style="background:#e8573f" title="Terracota"></button>
+            <button class="pc" style="background:#f6f5f2;border-bottom:1px solid #ccc" title="Isopor"></button>
+            <button class="pc pc-exp" title="Paleta expandida">…</button>
+        </div>
+    </div>
+
+    <!-- ══════════ NAVEGADOR DE DOCUMENTO ══════════ -->
+    <div class="navigator" role="toolbar" aria-label="Navegador de documento">
+        <button class="nv" title="Primeira página">⏮</button>
+        <button class="nv" title="Página anterior">◀</button>
+        <button class="nv nv-aba" title="Página 1">Página 1</button>
+        <button class="nv" title="Próxima página">▶</button>
+        <button class="nv" title="Última página">⏭</button>
+        <button class="nv nv-add" title="Adicionar página">＋</button>
+        <span class="nv-linha"></span>
+        <button class="nv" title="Ajustar página na tela">⊞</button>
+        <input type="range" class="nv-zoom" min="10" max="400" value="100" tabindex="-1" aria-label="Zoom">
+        <button class="nv nv-pct" title="Nível de zoom">100%</button>
+    </div>
+
+    <!-- ══════════ BARRA DE STATUS ══════════ -->
+    <div class="statusbar" role="status">
+        <span class="st-grupo" title="Cores ativas">
+            <span class="swatch-grande" style="background:#3b82f6"></span><span class="st-rotulo">Preenchimento</span>
+            <span class="swatch-grande" style="background:#101014"></span><span class="st-rotulo">Contorno</span>
+        </span>
+        <span class="st-sep"></span>
+        <span class="st-grupo st-info" title="Objeto selecionado">Retângulo — 220 × 120 mm em (200, 200)</span>
+        <span class="st-cresce"></span>
+        <span class="st-grupo" title="Coordenadas do cursor">x 530 · y 300 <small>mm</small></span>
+        <span class="st-sep"></span>
+        <span class="st-grupo" title="Ferramenta ativa">Seletor</span>
+    </div>
 </body>
 </html>
