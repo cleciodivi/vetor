@@ -3,6 +3,12 @@
 **Editor vetorial, direto no navegador.** Formas, texto e cores em SVG — sem instalar nada, de graça.
 
 <p align="center">
+  <a href="https://cleciodivi.github.io/vetor/"><img alt="Abrir o editor" src="https://img.shields.io/badge/ABRIR_O_EDITOR-23221e?style=for-the-badge&logo=safari&logoColor=white" height="34"></a>
+  <a href="https://github.com/cleciodivi/vetor/actions/workflows/tests.yml"><img alt="Testes" src="https://github.com/cleciodivi/vetor/actions/workflows/tests.yml/badge.svg"></a>
+  <a href="LICENSE"><img alt="Licença MIT" src="https://img.shields.io/badge/licen%C3%A7a-MIT-blue.svg"></a>
+</p>
+
+<p align="center">
   <img src="docs/preview.png" alt="Editor VETOR em funcionamento" width="720">
 </p>
 

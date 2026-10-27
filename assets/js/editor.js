@@ -148,6 +148,52 @@ const Editor = (() => {
         notificar('documento');
     }
 
+    // ---------- Redimensionamento pelas alças ----------
+    // Cada alça é um canto da caixa: 'nw', 'ne', 'sw', 'se'.
+    // Calcula a nova geometria a partir da caixa ORIGINAL e do ponto do documento.
+    // Devolve mudanças para aplicar (núcleo puro, sem DOM) — ou null se inválido.
+    function calcularRedimensionamento(f, canto, docX, docY) {
+        // Texto não redimensiona pelas alças no MVP (a fonte muda pelo painel)
+        if (f.tipo === 'texto') return null;
+        const c = caixa(f);
+        const MIN = 2;
+        let x1 = c.x, y1 = c.y, x2 = c.x + c.w, y2 = c.y + c.h;
+        if (canto === 'nw') { x1 = docX; y1 = docY; }
+        else if (canto === 'ne') { x2 = docX; y1 = docY; }
+        else if (canto === 'sw') { x1 = docX; y2 = docY; }
+        else if (canto === 'se') { x2 = docX; y2 = docY; }
+        else return null;
+
+        let novaX = Math.min(x1, x2), novaY = Math.min(y1, y2);
+        const novaW = Math.abs(x2 - x1), novaH = Math.abs(y2 - y1);
+        if (novaW < MIN || novaH < MIN) return null;
+
+        const mudancas = { x: novaX, y: novaY };
+        if (f.tipo === 'linha') {
+            // linha: mantém origem fixa (x,y) e move o ponto solto
+            const cantoOpposto = (canto === 'nw' || canto === 'sw') ? 2 : 1;
+            if (cantoOpposto === 1) { mudancas.x2 = docX; mudancas.y2 = docY; }
+            else { mudancas.x = docX; mudancas.y = docY; }
+            delete mudancas.x; delete mudancas.y;
+            mudancas[cantoOpposto === 1 ? 'x2' : 'x'] = docX;
+            mudancas[cantoOpposto === 1 ? 'y2' : 'y'] = docY;
+        } else {
+            mudancas.w = novaW;
+            mudancas.h = novaH;
+        }
+        return mudancas;
+    }
+
+    function redimensionarSelecionada(canto, docX, docY) {
+        const f = formaSelecionada();
+        if (!f) return false;
+        const mudancas = calcularRedimensionamento(f, canto, docX, docY);
+        if (!mudancas) return false;
+        Object.assign(f, mudancas);
+        notificar('documento');
+        return true;
+    }
+
     function definirEspessura(v) {
         const f = formaSelecionada();
         if (!f) return;
@@ -328,7 +374,7 @@ const Editor = (() => {
         atualizarPropriedades,
         definirX, definirY, definirLargura, definirAltura,
         definirFundo, definirContorno, definirEspessura, definirTexto,
-        moverSelecionada,
+        moverSelecionada, redimensionarSelecionada, calcularRedimensionamento,
         definirZoom, definirPan, paraDocumento,
         exportarSvg, caixa, formaNoPonto,
         registrarMudanca, desfazer, refazer

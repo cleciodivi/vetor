@@ -132,5 +132,42 @@ Editor.criarForma({ tipo: 'retangulo', x: 0, y: 0, w: 10, h: 10, fundo: '#fff', 
 check('remove selecionada', Editor.removerSelecionada() && Editor.estado.formas.length === 0);
 check('remove sem nada = false', Editor.removerSelecionada() === false);
 
+/* Redimensionamento pelas alças */
+function resetComRetangulo() {
+    Editor.limpar('rz');
+    Editor.registrarMudanca();
+    Editor.criarForma({ tipo: 'retangulo', x: 100, y: 100, w: 50, h: 40, fundo: '#fff', semContorno: true });
+    return Editor.formaSelecionada();
+}
+
+let f = resetComRetangulo();
+// Alça SE: arrasta para (300, 240) → aumenta largura/altura
+check('resize se', Editor.redimensionarSelecionada('se', 300, 240) && f.x === 100 && f.y === 100 && f.w === 200 && f.h === 140);
+// Alça NW: caixa (100,100)-(300,240); arrasta para (50,80) → x=50 y=80 w=250 h=160
+check('resize nw', Editor.redimensionarSelecionada('nw', 50, 80) && f.x === 50 && f.y === 80 && f.w === 250 && f.h === 160);
+// Alça NE: caixa (50,80)-(300,240); arrasta para (30,90) → canto SE (fixo) vira referência: x=30 y=90 w=20 h=150
+check('resize ne cruzado', Editor.redimensionarSelecionada('ne', 30, 90) && f.x === 30 && f.y === 90 && f.w === 20 && f.h === 150);
+// Colapso real: caixa (30,90)-(50,240); alça SE para (31, 91) → w=1 h=1 <2 → recusa
+const antesFail = { x: f.x, y: f.y, w: f.w, h: f.h };
+check('resize mínimo recusa', Editor.redimensionarSelecionada('se', 31, 91) === false && f.x === antesFail.x && f.w === antesFail.w && f.h === antesFail.h);
+check('resize canto inválido', Editor.redimensionarSelecionada('xx', 1, 1) === false);
+
+/* Redimensionar linha */
+Editor.limpar('l2');
+Editor.registrarMudanca();
+Editor.criarForma({ tipo: 'linha', x: 0, y: 0, x2: 100, y2: 0, espessura: 2, semFundo: true, contorno: '#000' });
+const linha2 = Editor.formaSelecionada();
+// Caixa de linha horizontal tem h=0; alça se/ne mexem no ponto (x2,y2); nw/sw no (x,y)
+check('resize linha ne', Editor.redimensionarSelecionada('ne', 150, 20) && linha2.x2 === 150 && linha2.y2 === 20 && linha2.x === 0);
+check('resize linha nw', Editor.redimensionarSelecionada('nw', -10, 5) && linha2.x === -10 && linha2.y === 5 && linha2.x2 === 150);
+
+/* Texto: não redimensiona por alça no MVP */
+Editor.limpar('t2');
+Editor.registrarMudanca();
+Editor.criarForma({ tipo: 'texto', x: 10, y: 10, texto: 'AB', fonte: 20, semFundo: true, contorno: '#000' });
+const texto2 = Editor.formaSelecionada();
+check('resize texto recusa', Editor.redimensionarSelecionada('se', 100, 40) === false);
+check('resize texto intacto', (() => { const c = Editor.caixa(texto2); return c.w === 24 && c.h === 20; })());
+
 console.log(`\n${pass} testes passaram, ${fail} falharam`);
 process.exit(fail > 0 ? 1 : 0);

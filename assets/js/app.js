@@ -132,11 +132,13 @@
         ret.setAttribute('stroke', '#2f7cf6');
         ret.setAttribute('stroke-width', 1.5 / Editor.estado.zoom);
         ret.setAttribute('stroke-dasharray', `${5 / Editor.estado.zoom} ${3 / Editor.estado.zoom}`);
+        ret.setAttribute('pointer-events', 'none');
         gOverlay.appendChild(ret);
-        // Alças de canto (visual)
-        const tamanho = 8 / Editor.estado.zoom;
-        [[c.x - margem, c.y - margem], [c.x + c.w + margem, c.y - margem],
-         [c.x - margem, c.y + c.h + margem], [c.x + c.w + margem, c.y + c.h + margem]].forEach(([x, y]) => {
+        // Alças de canto (interativas no modo selecionar)
+        const tamanho = 9 / Editor.estado.zoom;
+        const podeRedimensionar = f.tipo !== 'texto' && Editor.estado.ferramenta === 'selecionar';
+        [[c.x - margem, c.y - margem, 'nw'], [c.x + c.w + margem, c.y - margem, 'ne'],
+         [c.x - margem, c.y + c.h + margem, 'sw'], [c.x + c.w + margem, c.y + c.h + margem, 'se']].forEach(([x, y, canto]) => {
             const h = document.createElementNS(SVG_NS, 'rect');
             h.setAttribute('x', x - tamanho / 2);
             h.setAttribute('y', y - tamanho / 2);
@@ -145,6 +147,8 @@
             h.setAttribute('fill', '#fff');
             h.setAttribute('stroke', '#2f7cf6');
             h.setAttribute('stroke-width', 1.5 / Editor.estado.zoom);
+            h.dataset.canto = canto;
+            h.style.cursor = podeRedimensionar ? (canto === 'nw' || canto === 'se' ? 'nwse-resize' : 'nesw-resize') : 'default';
             gOverlay.appendChild(h);
         });
     }
@@ -230,6 +234,16 @@
         const ferr = Editor.estado.ferramenta;
 
         if (ferr === 'selecionar') {
+            // 1ª prioridade: alça de redimensionamento (clicada por cima)
+            const canto = (ev.target && ev.target.dataset && ev.target.dataset.canto) || null;
+            if (canto) {
+                const f = Editor.formaSelecionada();
+                if (f && f.tipo !== 'texto') {
+                    acao.ponteiroInicial = { redimensionando: canto };
+                    tela.setPointerCapture(ev.pointerId);
+                    return;
+                }
+            }
             const f = Editor.formaNoPonto(x, y, TOLERANCIA / Editor.estado.zoom);
             Editor.selecionar(f ? f.id : null);
             if (f) {
@@ -269,6 +283,15 @@
 
         if (!acao.ponteiroInicial) return;
         const inicial = acao.ponteiroInicial;
+
+        // Redimensionamento pela alça
+        if (inicial.redimensionando) {
+            const { x: dx, y: dy } = posDeEvento(ev);
+            Editor.redimensionarSelecionada(inicial.redimensionando, dx, dy);
+            renderizar();
+            return;
+        }
+
         const dx = x - inicial.x, dy = y - inicial.y;
         if (!inicial.movido && Math.hypot(dx, dy) < 2 / Editor.estado.zoom) return;
         inicial.movido = true;
@@ -301,7 +324,9 @@
             tela.classList.remove('arrastando');
         }
         if (acao.ponteiroInicial) {
-            if (acao.formaNova) {
+            if (acao.ponteiroInicial.redimensionando) {
+                Editor.registrarMudanca();
+            } else if (acao.formaNova) {
                 const f = acao.formaNova;
                 // Descarta formas menores que 2px (clique duplo acidental)
                 const c = Editor.caixa(f);
