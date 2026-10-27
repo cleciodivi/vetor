@@ -40,6 +40,7 @@ Editores vetoriais são ou pagos e pesados (CorelDRAW, Illustrator) ou complexos
 | Texto (T) | Clique e escreva (edição no painel) |
 | Redimensionar | Arraste as alças de canto da forma selecionada |
 | Camadas | Lista de objetos: renomear, ocultar, reordenar (⤓↓↑⤒) |
+| Caneta (P) | Cliques = nós; arraste = tangente; Enter fecha, Esc cancela |
 | Zoom | Roda do mouse (ancora no cursor) |
 | Mover tela (H) | Arraste a área de desenho |
 | Desfazer/Refazer | Ctrl+Z / Ctrl+Y (até 60 passos) |
@@ -84,7 +85,8 @@ vetor/
 - [x] MVP: formas, seleção, mover, cores, zoom/pan, exportar SVG/PNG
 - [x] Redimensionar pela alça da seleção
 - [x] Camadas (lista de objetos, reordenar, ocultar)
-- [ ] Caneta com curvas Bézier + edição de nós
+- [x] Caneta com curvas Bézier (cliques = nós, arraste = tangente, Enter fecha, Esc cancela)
+- [ ] Edição de nós de path existente (tangentes arrastáveis fora do modo caneta)
 - [ ] Grade, guias e alinhamentos
 - [ ] Agrupar/desagrupar
 - [ ] Copiar/colar/duplicar (Ctrl+C/V/D)
