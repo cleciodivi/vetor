@@ -2,8 +2,10 @@
 
 **Editor vetorial, direto no navegador.** Formas, texto e cores em SVG — sem instalar nada, de graça.
 
+**[→ Abrir o editor](https://cleciodivi.github.io/vetor/editor.html)** · [Vitrine](https://cleciodivi.github.io/vetor/) · [GitHub](https://github.com/cleciodivi/vetor)
+
 <p align="center">
-  <a href="https://cleciodivi.github.io/vetor/"><img alt="Abrir o editor" src="https://img.shields.io/badge/ABRIR_O_EDITOR-23221e?style=for-the-badge&logo=safari&logoColor=white" height="34"></a>
+  <a href="https://cleciodivi.github.io/vetor/editor.html"><img alt="Abrir o editor" src="https://img.shields.io/badge/ABRIR_O_EDITOR-23221e?style=for-the-badge&logo=safari&logoColor=white" height="34"></a>
   <a href="https://github.com/cleciodivi/vetor/actions/workflows/tests.yml"><img alt="Testes" src="https://github.com/cleciodivi/vetor/actions/workflows/tests.yml/badge.svg"></a>
   <a href="LICENSE"><img alt="Licença MIT" src="https://img.shields.io/badge/licen%C3%A7a-MIT-blue.svg"></a>
 </p>
@@ -49,7 +51,7 @@ Editores vetoriais são ou pagos e pesados (CorelDRAW, Illustrator) ou complexos
 
 ## Rodando
 
-É só abrir o `index.html` no navegador — ou servir a pasta por qualquer servidor estático:
+Abra a vitrine (`index.html`) ou o editor direto (`editor.html`) no navegador — ou sirva a pasta por qualquer servidor estático:
 
 ```bash
 # com Python
@@ -70,12 +72,17 @@ node tests/test-editor.js
 
 ```
 vetor/
-├── index.html            # App único (topbar / ferramentas / mesa / painel)
+├── index.html            # Vitrine (hero, galeria, recursos, CTA)
+├── editor.html           # Editor completo (topbar / ferramentas / mesa / painel)
+├── favicon.svg
 ├── assets/
-│   ├── css/styles.css    # Tema claro minimalista
+│   ├── css/
+│   │   ├── site.css      # Tema da vitrine
+│   │   └── styles.css    # Tema do editor
 │   └── js/
 │       ├── editor.js     # Núcleo: modelo, seleção, histórico, SVG
 │       └── app.js        # UI: renderização, eventos, arquivos
+├── docs/                 # Capturas de tela usadas no README/vitrine
 └── tests/
     └── test-editor.js    # Testes do núcleo (Node)
 ```
