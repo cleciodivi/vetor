@@ -216,6 +216,48 @@ const Editor = (() => {
         f.x += dx;
         f.y += dy;
         if (f.tipo === 'linha') { f.x2 += dx; f.y2 += dy; }
+        if (f.tipo === 'path') {
+            f.pontos.forEach(p => {
+                p.x += dx; p.y += dy;
+                if (p.ax !== undefined) { p.ax += dx; p.ay += dy; }
+                if (p.bx !== undefined) { p.bx += dx; p.by += dy; }
+            });
+        }
+    }
+
+    // ---------- Path: edição de nós ----------
+    function adicionarPonto(f, x, y, controleA, controleB) {
+        if (f.tipo !== 'path') return;
+        const ponto = { x, y };
+        if (controleA) { ponto.ax = controleA.x; ponto.ay = controleA.y; }
+        if (controleB) { ponto.bx = controleB.x; ponto.by = controleB.y; }
+        f.pontos.push(ponto);
+        notificar('documento');
+    }
+
+    function moverPonto(f, indice, x, y) {
+        if (f.tipo !== 'path' || !f.pontos[indice]) return;
+        const p = f.pontos[indice];
+        const dx = x - p.x, dy = y - p.y;
+        p.x = x; p.y = y;
+        // Arrastar a âncora leva junto as tangentes (mantém formato); Shift quebra depois
+        if (p.ax !== undefined) { p.ax += dx; p.ay += dy; }
+        if (p.bx !== undefined) { p.bx += dx; p.by += dy; }
+        notificar('documento');
+    }
+
+    function definirControle(f, indice, lado, x, y) {
+        if (f.tipo !== 'path' || !f.pontos[indice]) return;
+        const p = f.pontos[indice];
+        if (lado === 'a') { p.ax = x; p.ay = y; }
+        else { p.bx = x; p.by = y; }
+        notificar('documento');
+    }
+
+    function removerUltimoPonto(f) {
+        if (f.tipo !== 'path' || !f.pontos.length) return;
+        f.pontos.pop();
+        notificar('documento');
     }
 
     // ---------- Camadas ----------
@@ -294,15 +336,39 @@ const Editor = (() => {
         let tag;
         if (f.tipo === 'retangulo') tag = `<rect x="${f.x}" y="${f.y}" width="${f.w}" height="${f.h}"`;
         else if (f.tipo === 'elipse') tag = `<ellipse cx="${f.x + f.w / 2}" cy="${f.y + f.h / 2}" rx="${f.w / 2}" ry="${f.h / 2}"`;
+        else if (f.tipo === 'path') tag = `<path d="${caminhoD(f)}"`;
         else tag = `<line x1="${f.x}" y1="${f.y}" x2="${f.x2}" y2="${f.y2}"`;
         if (f.tipo === 'linha') {
             tag += ` stroke="${f.semContorno ? (f.fundo || '#3b82f6') : (f.contorno || '#26251f')}" stroke-width="${f.espessura || 2}" stroke-linecap="round"/>`;
         } else {
             tag += ` fill="${f.semFundo ? 'none' : (f.fundo || '#3b82f6')}"`;
             if (!f.semContorno) tag += ` stroke="${f.contorno || '#26251f'}" stroke-width="${f.espessura || 2}"`;
-            tag += '/>';
+            tag += `${f.tipo === 'path' && f.fechado ? ' fill-rule="evenodd"' : ''}/>`;
         }
         return tag;
+    }
+
+    // ---------- Path (caneta Bézier) ----------
+    // f.pontos: [{ x, y, ax, ay, bx, by }] — âncoras em ordem.
+    // ax/ay = controle da CURVA QUE CHEGA neste nó; bx/by = controle que SAI dele.
+    // Ponto é reto quando não tem controles relevantes.
+    function caminhoD(f) {
+        const pts = f.pontos || [];
+        if (!pts.length) return '';
+        let d = `M ${pts[0].x} ${pts[0].y}`;
+        const segmento = (p0, p1) => {
+            if (p0.bx !== undefined && p0.by !== undefined && p1.ax !== undefined && p1.ay !== undefined) {
+                d += ` C ${p0.bx} ${p0.by} ${p1.ax} ${p1.ay} ${p1.x} ${p1.y}`;
+            } else {
+                d += ` L ${p1.x} ${p1.y}`;
+            }
+        };
+        for (let i = 1; i < pts.length; i++) segmento(pts[i - 1], pts[i]);
+        if (f.fechado) {
+            segmento(pts[pts.length - 1], pts[0]);
+            d += ' Z';
+        }
+        return d;
     }
 
     function exportarSvg() {
@@ -323,6 +389,19 @@ const Editor = (() => {
                 w: Math.abs(f.x2 - f.x), h: Math.abs(f.y2 - f.y)
             };
         }
+        if (f.tipo === 'path') {
+            const pts = f.pontos || [];
+            if (!pts.length) return { x: 0, y: 0, w: 1, h: 1 };
+            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+            const passa = (x, y) => {
+                if (x < minX) minX = x;
+                if (y < minY) minY = y;
+                if (x > maxX) maxX = x;
+                if (y > maxY) maxY = y;
+            };
+            pts.forEach(p => { passa(p.x, p.y); if (p.ax !== undefined) passa(p.ax, p.ay); if (p.bx !== undefined) passa(p.bx, p.by); });
+            return { x: minX, y: minY, w: maxX - minX, h: maxY - minY };
+        }
         if (f.tipo === 'texto') {
             // Caixa aproximada: largura ~0.6 × fonte por caractere, altura = fonte
             const fonte = f.fonte || 24;
@@ -338,6 +417,22 @@ const Editor = (() => {
         if (docX < caixaInteira.x - margem || docX > caixaInteira.x + caixaInteira.w + margem) return false;
         if (docY < caixaInteira.y - margem || docY > caixaInteira.y + caixaInteira.h + margem) return false;
         if (f.tipo === 'retangulo' || f.tipo === 'texto') return true;
+        if (f.tipo === 'path') {
+            // Amostragem: distância por segmento (amostras são pontos da poligonal)
+            const amostras = amostrarCaminho(f, 24);
+            for (let i = 1; i < amostras.length; i++) {
+                const [x1, y1] = amostras[i - 1], [x2, y2] = amostras[i];
+                const dx = x2 - x1, dy = y2 - y1;
+                const len2 = dx * dx + dy * dy;
+                let t = len2 === 0 ? 0 : ((docX - x1) * dx + (docY - y1) * dy) / len2;
+                t = Math.max(0, Math.min(1, t));
+                const dist = Math.hypot(docX - (x1 + t * dx), docY - (y1 + t * dy));
+                if (dist <= margem) return true;
+            }
+            // Fechado com preenchimento: ponto dentro conta como acerto
+            if (!f.semFundo && f.fechado && pontoDentroPoligono(amostras, docX, docY)) return true;
+            return false;
+        }
         if (f.tipo === 'elipse') {
             const cx = caixaInteira.x + f.w / 2, cy = caixaInteira.y + f.h / 2;
             const rx = f.w / 2 + margem, ry = f.h / 2 + margem;
@@ -352,6 +447,47 @@ const Editor = (() => {
         const proxX = f.x + t * dx, proxY = f.y + t * dy;
         const dist = Math.hypot(docX - proxX, docY - proxY);
         return dist <= margem;
+    }
+
+    // Amostra o path: devolve pontos [x,y] ao longo das retas/curvas (inclui fecho).
+    function amostrarCaminho(f, curvaPassos) {
+        const pts = f.pontos || [];
+        const passos = curvaPassos || 16;
+        const resultado = [];
+        if (!pts.length) return resultado;
+        resultado.push([pts[0].x, pts[0].y]);
+        const pares = [];
+        for (let i = 1; i < pts.length; i++) pares.push([pts[i - 1], pts[i]]);
+        if (f.fechado && pts.length > 1) pares.push([pts[pts.length - 1], pts[0]]);
+        pares.forEach(([p0, p1]) => {
+            if (p0.bx !== undefined && p0.by !== undefined && p1.ax !== undefined && p1.ay !== undefined) {
+                for (let t = 1; t <= passos; t++) {
+                    const u = t / passos;
+                    resultado.push(pontoBezier(p0, p1, u));
+                }
+            } else {
+                resultado.push([p1.x, p1.y]);
+            }
+        });
+        return resultado;
+    }
+
+    function pontoBezier(p0, p1, u) {
+        const um = 1 - u;
+        const x = um * um * um * p0.x + 3 * um * um * u * p0.bx + 3 * um * u * u * p1.ax + u * u * u * p1.x;
+        const y = um * um * um * p0.y + 3 * um * um * u * p0.by + 3 * um * u * u * p1.ay + u * u * u * p1.y;
+        return [x, y];
+    }
+
+    function pontoDentroPoligono(amostras, x, y) {
+        let dentro = false;
+        for (let i = 0, j = amostras.length - 1; i < amostras.length; j = i++) {
+            const [xi, yi] = amostras[i], [xj, yj] = amostras[j];
+            if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) {
+                dentro = !dentro;
+            }
+        }
+        return dentro;
     }
 
     function formaNoPonto(docX, docY, tolerancia) {
@@ -413,6 +549,7 @@ const Editor = (() => {
         definirFundo, definirContorno, definirEspessura, definirTexto,
         moverSelecionada, redimensionarSelecionada, calcularRedimensionamento,
         moverFormaNaOrdem, definirVisibilidade, renomearForma,
+        caminhoD, amostrarCaminho, adicionarPonto, moverPonto, definirControle, removerUltimoPonto,
         definirZoom, definirPan, paraDocumento,
         exportarSvg, caixa, formaNoPonto,
         registrarMudanca, desfazer, refazer

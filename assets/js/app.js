@@ -61,6 +61,12 @@
             el.setAttribute('x2', f.x2); el.setAttribute('y2', f.y2);
             return el;
         }
+        if (f.tipo === 'path') {
+            const el = document.createElementNS(SVG_NS, 'path');
+            el.setAttribute('d', Editor.caminhoD(f));
+            if (f.fechado) el.setAttribute('fill-rule', 'evenodd');
+            return el;
+        }
         // texto
         const el = document.createElementNS(SVG_NS, 'text');
         el.setAttribute('x', f.x); el.setAttribute('y', f.y);
@@ -97,13 +103,18 @@
             }
             // Atualiza geometria e estilo
             const novo = criarLayout(f);
-            for (const attr of ['x', 'y', 'x1', 'y1', 'x2', 'y2', 'cx', 'cy', 'rx', 'ry', 'width', 'height', 'font-size']) {
+            for (const attr of ['x', 'y', 'x1', 'y1', 'x2', 'y2', 'cx', 'cy', 'rx', 'ry', 'width', 'height', 'font-size', 'd', 'fill-rule']) {
                 if (novo.hasAttribute(attr)) el.setAttribute(attr, novo.getAttribute(attr));
             }
             if (f.tipo === 'texto') el.textContent = f.texto || '';
             const cores = estiloDe(f);
             if (f.tipo === 'texto') el.setAttribute('fill', cores.stroke);
             else if (f.tipo === 'linha') { el.setAttribute('stroke', cores.stroke); el.setAttribute('stroke-width', f.espessura || 2); }
+            else if (f.tipo === 'path') {
+                el.setAttribute('fill', cores.fill);
+                if (f.semContorno) { el.removeAttribute('stroke'); el.removeAttribute('stroke-width'); }
+                else { el.setAttribute('stroke', cores.stroke); el.setAttribute('stroke-width', f.espessura || 2); }
+            }
             else {
                 el.setAttribute('fill', cores.fill);
                 if (f.semContorno) { el.removeAttribute('stroke'); el.removeAttribute('stroke-width'); }
@@ -117,9 +128,56 @@
         atualizarStatus();
     }
 
+    function desenharTangente(ax, ay, cx, cy) {
+        const zoomInv = 1 / Editor.estado.zoom;
+        const linha = document.createElementNS(SVG_NS, 'line');
+        linha.setAttribute('x1', ax); linha.setAttribute('y1', ay);
+        linha.setAttribute('x2', cx); linha.setAttribute('y2', cy);
+        linha.setAttribute('stroke', '#b9a8f8');
+        linha.setAttribute('stroke-width', 1 * zoomInv);
+        gOverlay.appendChild(linha);
+        const tamanho = 5 * zoomInv;
+        const bolinha = document.createElementNS(SVG_NS, 'circle');
+        bolinha.setAttribute('cx', cx); bolinha.setAttribute('cy', cy);
+        bolinha.setAttribute('r', tamanho / 2);
+        bolinha.setAttribute('fill', '#8a6ef0');
+        gOverlay.appendChild(bolinha);
+    }
+
     function renderizarOverlay() {
         gOverlay.replaceChildren();
+        const zoomInv = 1 / Editor.estado.zoom;
         const f = Editor.formaSelecionada();
+
+        // Preview da caneta: traçado em curso + nós + tangentes
+        if (caneta.forma) {
+            const pontos = caneta.forma.pontos;
+            if (pontos.length) {
+                const dPreview = Editor.caminhoD({ tipo: 'path', fechado: false, pontos });
+                const preview = document.createElementNS(SVG_NS, 'path');
+                preview.setAttribute('d', dPreview);
+                preview.setAttribute('fill', 'none');
+                preview.setAttribute('stroke', '#8a6ef0');
+                preview.setAttribute('stroke-width', 2 * zoomInv);
+                gOverlay.appendChild(preview);
+                const tamanho = 7 * zoomInv;
+                pontos.forEach((p, i) => {
+                    const no = document.createElementNS(SVG_NS, 'rect');
+                    no.setAttribute('x', p.x - tamanho / 2);
+                    no.setAttribute('y', p.y - tamanho / 2);
+                    no.setAttribute('width', tamanho);
+                    no.setAttribute('height', tamanho);
+                    no.setAttribute('fill', i === 0 ? '#e8422d' : '#fff');
+                    no.setAttribute('stroke', '#8a6ef0');
+                    no.setAttribute('stroke-width', 1.5 * zoomInv);
+                    gOverlay.appendChild(no);
+                    if (p.ax !== undefined) desenharTangente(p.x, p.y, p.ax, p.ay);
+                    if (p.bx !== undefined) desenharTangente(p.x, p.y, p.bx, p.by);
+                });
+            }
+            return; // enquanto traça, o overlay de seleção fica de fora
+        }
+
         if (!f) return;
         const c = Editor.caixa(f);
         const margem = (f.espessura || 0) / 2;
@@ -130,12 +188,12 @@
         ret.setAttribute('height', Math.max(c.h, 1) + margem * 2);
         ret.setAttribute('fill', 'none');
         ret.setAttribute('stroke', '#2f7cf6');
-        ret.setAttribute('stroke-width', 1.5 / Editor.estado.zoom);
-        ret.setAttribute('stroke-dasharray', `${5 / Editor.estado.zoom} ${3 / Editor.estado.zoom}`);
+        ret.setAttribute('stroke-width', 1.5 * zoomInv);
+        ret.setAttribute('stroke-dasharray', `${5 * zoomInv} ${3 * zoomInv}`);
         ret.setAttribute('pointer-events', 'none');
         gOverlay.appendChild(ret);
         // Alças de canto (interativas no modo selecionar)
-        const tamanho = 9 / Editor.estado.zoom;
+        const tamanho = 9 * zoomInv;
         const podeRedimensionar = f.tipo !== 'texto' && Editor.estado.ferramenta === 'selecionar';
         [[c.x - margem, c.y - margem, 'nw'], [c.x + c.w + margem, c.y - margem, 'ne'],
          [c.x - margem, c.y + c.h + margem, 'sw'], [c.x + c.w + margem, c.y + c.h + margem, 'se']].forEach(([x, y, canto]) => {
@@ -146,7 +204,7 @@
             h.setAttribute('height', tamanho);
             h.setAttribute('fill', '#fff');
             h.setAttribute('stroke', '#2f7cf6');
-            h.setAttribute('stroke-width', 1.5 / Editor.estado.zoom);
+            h.setAttribute('stroke-width', 1.5 * zoomInv);
             h.dataset.canto = canto;
             h.style.cursor = podeRedimensionar ? (canto === 'nw' || canto === 'se' ? 'nwse-resize' : 'nesw-resize') : 'default';
             gOverlay.appendChild(h);
@@ -214,7 +272,10 @@
     }
 
     $$('.ferramentas .bt-ferr').forEach(b => {
-        b.addEventListener('click', () => definirFerramenta(b.dataset.ferramenta));
+        b.addEventListener('click', () => {
+            if (caneta.forma) finalizarCaneta(false);
+            definirFerramenta(b.dataset.ferramenta);
+        });
     });
 
     function posDeEvento(ev) {
@@ -247,9 +308,31 @@
             const f = Editor.formaNoPonto(x, y, TOLERANCIA / Editor.estado.zoom);
             Editor.selecionar(f ? f.id : null);
             if (f) {
-                acao.ponteiroInicial = { x, y, original: { ...f }, movido: false };
+                acao.ponteiroInicial = { x, y, ultimoX: x, ultimoY: y, original: { ...f }, movido: false };
                 tela.setPointerCapture(ev.pointerId);
             }
+            return;
+        }
+
+        // Caneta: clique adiciona nó; arraste puxa tangente
+        if (ferr === 'caneta') {
+            if (!caneta.forma) {
+                caneta.forma = Editor.criarForma({ tipo: 'path', fechado: false, semFundo: true, contorno: '#26251f', espessura: 2, pontos: [] });
+                caneta.forma.pontos.push({ x, y });
+            } else {
+                const anterior = caneta.forma.pontos[caneta.forma.pontos.length - 1];
+                const novo = { x, y };
+                // Curva suave: reflexo da tangente "b" anterior vira "a" do novo nó
+                if (anterior.bx !== undefined && caneta.arrastou) {
+                    novo.ax = 2 * anterior.x - anterior.bx;
+                    novo.ay = 2 * anterior.y - anterior.by;
+                }
+                caneta.forma.pontos.push(novo);
+            }
+            caneta.arrastou = false;
+            acao.ponteiroInicial = { caneta: true, x, y, movido: false };
+            tela.setPointerCapture(ev.pointerId);
+            renderizar();
             return;
         }
 
@@ -296,6 +379,16 @@
         if (!inicial.movido && Math.hypot(dx, dy) < 2 / Editor.estado.zoom) return;
         inicial.movido = true;
 
+        // Caneta: puxa a tangente "b" do último nó (com reflexo simétrico)
+        if (inicial.caneta && caneta.forma) {
+            const pontos = caneta.forma.pontos;
+            const p = pontos[pontos.length - 1];
+            p.bx = x; p.by = y;
+            caneta.arrastou = true;
+            renderizar();
+            return;
+        }
+
         const f = acao.formaNova || Editor.formaSelecionada();
         if (!f) return;
 
@@ -308,6 +401,16 @@
                 f.x2 = x; f.y2 = y;
             }
             Editor.selecionar(f.id);
+        } else if (f.tipo === 'path') {
+            // Movimento de path: aplica DELTAS acumulados (não substitui)
+            const dxAcum = x - inicial.ultimoX, dyAcum = y - inicial.ultimoY;
+            f.pontos.forEach(p => {
+                p.x += dxAcum; p.y += dyAcum;
+                if (p.ax !== undefined) { p.ax += dxAcum; p.ay += dyAcum; }
+                if (p.bx !== undefined) { p.bx += dxAcum; p.by += dyAcum; }
+            });
+            inicial.ultimoX = x; inicial.ultimoY = y;
+            acao.arrastando = true;
         } else {
             // Movimento de forma existente
             f.x = inicial.original.x + dx;
@@ -326,6 +429,11 @@
         if (acao.ponteiroInicial) {
             if (acao.ponteiroInicial.redimensionando) {
                 Editor.registrarMudanca();
+            } else if (acao.ponteiroInicial.caneta) {
+                // Fim do gesto da caneta: se arrastou, a tangente "a" do PRÓXIMO
+                // nó será preenchida na hora da criação dele (reflexo simétrico).
+                acao.ponteiroInicial = null;
+                return;
             } else if (acao.formaNova) {
                 const f = acao.formaNova;
                 // Descarta formas menores que 2px (clique duplo acidental)
@@ -353,7 +461,26 @@
         Editor.definirZoom(Editor.estado.zoom * fator, ev.clientX - ret.left, ev.clientY - ret.top);
     }, { passive: false });
 
-    /* ---------- Painel: eventos ---------- */
+    /* ---------- Caneta ---------- */
+    const caneta = { forma: null, arrastou: false };
+
+    function finalizarCaneta(fechar) {
+        const f = caneta.forma;
+        if (!f) return;
+        if (f.pontos.length < (fechar ? 3 : 2)) {
+            // Traçado muito curto: descarta
+            Editor.estado.formas = Editor.estado.formas.filter(x => x.id !== f.id);
+            Editor.selecionar(null);
+        } else {
+            f.fechado = !!fechar;
+            Editor.selecionar(f.id);
+            Editor.registrarMudanca();
+        }
+        caneta.forma = null;
+        renderizar();
+    }
+
+    // Caneta: integrada ao pointerdown/move/up principais (ver abaixo).
     $('#prop_x').addEventListener('input', () => Editor.definirX(parseFloat($('#prop_x').value) || 0));
     $('#prop_y').addEventListener('input', () => Editor.definirY(parseFloat($('#prop_y').value) || 0));
     $('#prop_l').addEventListener('input', () => Editor.definirLargura(parseFloat($('#prop_l').value) || 1));
@@ -444,7 +571,7 @@
     $('#bt_redo').addEventListener('click', () => { if (Editor.refazer()) toast('Refeito'); });
 
     /* ---------- Teclado ---------- */
-    const ATALHOS = { v: 'selecionar', r: 'retangulo', e: 'elipse', l: 'linha', t: 'texto', h: 'mao' };
+    const ATALHOS = { v: 'selecionar', r: 'retangulo', e: 'elipse', l: 'linha', t: 'texto', p: 'caneta', h: 'mao' };
 
     window.addEventListener('keydown', ev => {
         if (ev.target.matches('input, textarea, select')) return;
@@ -465,18 +592,49 @@
             return;
         }
         if (ev.key === 'Delete' || ev.key === 'Backspace') {
+            if (Editor.estado.ferramenta === 'caneta' && caneta.forma) {
+                Editor.removerUltimoPonto(caneta.forma);
+                if (!caneta.forma.pontos.length) {
+                    Editor.estado.formas = Editor.estado.formas.filter(x => x.id !== caneta.forma.id);
+                    caneta.forma = null;
+                }
+                renderizar();
+                return;
+            }
             if (Editor.removerSelecionada()) {
                 Editor.registrarMudanca();
                 toast('Forma removida');
             }
             return;
         }
+        if (Editor.estado.ferramenta === 'caneta') {
+            if (ev.key === 'Enter') {
+                finalizarCaneta(true);
+                toast('Forma fechada');
+                return;
+            }
+            if (ev.key === 'Escape') {
+                // Cancelar: descarta o traçado em andamento
+                if (caneta.forma) {
+                    Editor.estado.formas = Editor.estado.formas.filter(x => x.id !== caneta.forma.id);
+                    caneta.forma = null;
+                    Editor.selecionar(null);
+                    renderizar();
+                    toast('Traçado cancelado');
+                }
+                return;
+            }
+        }
         const ferr = ATALHOS[ev.key.toLowerCase()];
-        if (ferr) definirFerramenta(ferr);
+        if (ferr) {
+            // Trocar de ferramenta com traçado aberto encerra em linha aberta
+            if (caneta.forma) finalizarCaneta(false);
+            definirFerramenta(ferr);
+        }
     });
 
     /* ---------- Camadas (painel) ---------- */
-    const NOMES_TIPO = { retangulo: 'Retângulo', elipse: 'Elipse', linha: 'Linha', texto: 'Texto' };
+    const NOMES_TIPO = { retangulo: 'Retângulo', elipse: 'Elipse', linha: 'Linha', texto: 'Texto', path: 'Traçado' };
 
     function nomeDaCamada(f) {
         if (f.nome) return f.nome;
@@ -485,7 +643,7 @@
     }
 
     function corDaCamada(f) {
-        if (f.tipo === 'linha') return f.semContorno ? (f.fundo || '#3b82f6') : (f.contorno || '#26251f');
+        if (f.tipo === 'linha' || f.tipo === 'path') return f.semContorno ? (f.fundo || '#8a6ef0') : (f.contorno || '#26251f');
         return f.semFundo ? 'transparent' : (f.fundo || '#3b82f6');
     }
 

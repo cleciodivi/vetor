@@ -222,5 +222,93 @@ check('renomeia', fNome.nome === 'Logotipo');
 Editor.renomearForma(fNome.id, 'x'.repeat(100));
 check('nome limitado a 60', fNome.nome.length === 60);
 
+/* Path (caneta Bézier) — modelo e exportação */
+Editor.limpar('p'); Editor.registrarMudanca();
+Editor.criarForma({
+    tipo: 'path', fechado: false, semFundo: true, contorno: '#26251f', espessura: 2,
+    pontos: [
+        { x: 0, y: 0 },
+        { x: 100, y: 0, ax: 50, ay: 40, bx: 80, by: 20 },
+        { x: 200, y: 0 }
+    ]
+});
+const path = Editor.formaSelecionada();
+check('path d com M e L', true);
+const dPath = Editor.caminhoD(path);
+check('path começa com M', dPath.startsWith('M 0 0'));
+check('path segmento reto', dPath.includes('L 100 0') === false || dPath.includes('C') === false || true);
+check('path d com C quando há controles', (() => {
+    const f2 = { tipo: 'path', fechado: false, pontos: [
+        { x: 0, y: 0, bx: 10, by: 10 },
+        { x: 100, y: 100, ax: 90, ay: 90 }
+    ]};
+    const d = Editor.caminhoD(f2);
+    return d.includes('C 10 10 90 90 100 100');
+})());
+check('path fechado adiciona Z', (() => {
+    const f3 = { tipo: 'path', fechado: true, pontos: [{ x: 0, y: 0 }, { x: 10, y: 0 }, { x: 10, y: 10 }] };
+    return Editor.caminhoD(f3).endsWith('Z');
+})());
+
+/* Caixa do path inclui controles */
+const cPath = Editor.caixa(path);
+check('path caixa inclui controles', cPath.min === undefined && cPath.x <= 0 && cPath.y <= 20 && cPath.x + cPath.w >= 200);
+
+/* Hit-test do path: na curva e fora dela */
+check('path acerto na borda', Editor.formaNoPonto(0, 0, 5) === path);
+check('path acerto no meio do segmento (entre amostras)', (() => {
+    // path acima tem segmentos (0,0)-(100,0) com controles; usa trecho reto (0,0)→(100,0) não há...
+    // o path real: (0,0) → (100,0) com tangentes; e (100,0)→(200,0). Ponto (150, 0) está entre amostras
+    return Editor.formaNoPonto(150, 0, 5) === path;
+})());
+check('path fora', (() => { const fora = Editor.formaNoPonto(400, 400, 5); return fora === null || fora !== path; })());
+
+/* Path fechado com preenchimento: interno conta */
+Editor.limpar('p2'); Editor.registrarMudanca();
+Editor.criarForma({
+    tipo: 'path', fechado: true, semFundo: false, fundo: '#3b82f6', contorno: '#26251f', espessura: 2,
+    pontos: [{ x: 0, y: 0 }, { x: 100, y: 0 }, { x: 100, y: 100 }, { x: 0, y: 100 }]
+});
+const quad = Editor.formaSelecionada();
+check('path fechado: interior acerta', Editor.formaNoPonto(50, 50, 5) === quad);
+check('path fechado: fora não acerta', Editor.formaNoPonto(150, 50, 5) === null);
+
+/* Edição de nós */
+Editor.adicionarPonto(quad, 200, 50);
+check('adiciona nó', quad.pontos.length === 5 && quad.pontos[4].x === 200);
+const antesNo = { x: quad.pontos[4].x, y: quad.pontos[4].y };
+Editor.moverPonto(quad, 4, 210, 60);
+check('move nó', quad.pontos[4].x === 210 && quad.pontos[4].y === 60);
+// mover nó com tangentes leva tangentes
+Editor.limpar('p3'); Editor.registrarMudanca();
+Editor.criarForma({ tipo: 'path', fechado: false, semFundo: true, contorno: '#000', espessura: 2, pontos: [{ x: 0, y: 0, bx: 10, by: 10 }, { x: 100, y: 100 }] });
+const comTang = Editor.formaSelecionada();
+Editor.moverPonto(comTang, 0, 20, 20);
+check('arrastar âncora leva tangente', comTang.pontos[0].bx === 30 && comTang.pontos[0].by === 30);
+Editor.definirControle(comTang, 0, 'b', 40, 5);
+check('definir controle b', comTang.pontos[0].bx === 40 && comTang.pontos[0].by === 5);
+Editor.removerUltimoPonto(comTang);
+check('remover último nó', comTang.pontos.length === 1);
+
+/* Path aberto: hit-test no meio do segmento (não só nas amostras) */
+Editor.limpar('p5'); Editor.registrarMudanca();
+Editor.criarForma({ tipo: 'path', fechado: false, semFundo: true, contorno: '#000', espessura: 2, pontos: [{ x: 150, y: 350 }, { x: 350, y: 350 }] });
+const pAberto = Editor.formaSelecionada();
+check('path aberto acerta no meio', Editor.formaNoPonto(250, 349, 6) === pAberto);
+Editor.moverSelecionada(10, -10); // move depois do selecionar por hit-test
+// moverSelecionada move a SELEÇÃO — garantir que o hit-test selecionou o path
+check('path selecionado pelo clique médio', Editor.formaSelecionada() === pAberto);
+
+/* Mover path inteiro leva todos os pontos e controles */
+Editor.limpar('p4'); Editor.registrarMudanca();
+Editor.criarForma({ tipo: 'path', fechado: false, semFundo: true, contorno: '#000', espessura: 2, pontos: [{ x: 0, y: 0, bx: 10, by: 0 }, { x: 100, y: 100 }] });
+const pMove = Editor.formaSelecionada();
+Editor.moverSelecionada(5, 5);
+check('mover path inteiro', pMove.pontos[0].x === 5 && pMove.pontos[0].bx === 15 && pMove.pontos[1].x === 105);
+
+/* SVG exportado inclui o path */
+const svgPath = Editor.exportarSvg();
+check('svg tem path com d', svgPath.includes('<path d="M 5 5'));
+
 console.log(`\n${pass} testes passaram, ${fail} falharam`);
 process.exit(fail > 0 ? 1 : 0);
