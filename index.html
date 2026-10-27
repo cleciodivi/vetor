@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="VETOR — Editor vetorial, direto no navegador. Formas, texto e cores em SVG, de graça.">
+    <title>VETOR — Editor vetorial</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
+    <link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+    <header class="topbar">
+        <a href="#" class="logo" id="logo_vetor">VETOR</a>
+        <input type="text" id="nome_doc" class="nome-doc" value="sem-titulo" spellcheck="false" aria-label="Nome do arquivo">
+        <div class="topbar-acoes">
+            <button class="bt-ferr" id="bt_undo" title="Desfazer (Ctrl+Z)" aria-label="Desfazer">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>
+            </button>
+            <button class="bt-ferr" id="bt_redo" title="Refazer (Ctrl+Y)" aria-label="Refazer">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 14l5-5-5-5"/><path d="M20 9H10a6 6 0 0 0 0 12h3"/></svg>
+            </button>
+            <span class="sep"></span>
+            <button class="bt-acao" id="bt_novo">Novo</button>
+            <button class="bt-acao" id="bt_abrir">Abrir</button>
+            <button class="bt-acao" id="bt_salvar">Salvar</button>
+            <span class="sep"></span>
+            <button class="bt-acao primario" id="bt_exportar_svg">Exportar SVG</button>
+            <button class="bt-acao" id="bt_exportar_png">PNG</button>
+        </div>
+        <input type="file" id="abrir_arquivo" accept=".json,application/json" hidden>
+    </header>
+
+    <div class="corpo">
+        <!-- Ferramentas -->
+        <nav class="ferramentas" aria-label="Ferramentas de desenho">
+            <button class="bt-ferr ativa" data-ferramenta="selecionar" title="Selecionar (V)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M5 3l14 8-6 1.5L16 19l-3 1-3-6.5L5 17V3z"/></svg>
+            </button>
+            <button class="bt-ferr" data-ferramenta="retangulo" title="Retângulo (R)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="4" y="6" width="16" height="12" rx="1"/></svg>
+            </button>
+            <button class="bt-ferr" data-ferramenta="elipse" title="Elipse (E)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><ellipse cx="12" cy="12" rx="8" ry="6"/></svg>
+            </button>
+            <button class="bt-ferr" data-ferramenta="linha" title="Linha (L)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 19L19 5"/></svg>
+            </button>
+            <button class="bt-ferr" data-ferramenta="texto" title="Texto (T)">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M5 6V4h14v2M12 4v16M9 20h6"/></svg>
+            </button>
+            <button class="bt-ferr" data-ferramenta="mao" title="Mover a tela (H) — ou arraste com o botão do meio">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 11V7a2 2 0 0 0-4 0M10 10V5a2 2 0 1 1 4 0v5m0-2a2 2 0 0 1 4 0v6a7 7 0 0 1-7 7h-1a7 7 0 0 1-7-7V9a2 2 0 0 1 4 0"/></svg>
+            </button>
+        </nav>
+
+        <!-- Área de desenho -->
+        <div class="tela" id="tela">
+            <svg id="mesa" xmlns="http://www.w3.org/2000/svg" aria-label="Mesa de desenho">
+                <g id="conteudo"></g>
+                <g id="overlay"></g>
+            </svg>
+        </div>
+
+        <!-- Propriedades -->
+        <aside class="painel" aria-label="Propriedades">
+            <h2 class="painel-titulo">Propriedades</h2>
+
+            <section class="painel-grupo" id="grp_posicao">
+                <h3>Posição e tamanho</h3>
+                <div class="grade2">
+                    <label>X<input type="number" id="prop_x" step="1"></label>
+                    <label>Y<input type="number" id="prop_y" step="1"></label>
+                    <label>L<input type="number" id="prop_l" step="1" min="1"></label>
+                    <label>A<input type="number" id="prop_a" step="1" min="1"></label>
+                </div>
+            </section>
+
+            <section class="painel-grupo">
+                <h3>Preenchimento</h3>
+                <div class="cor-linha">
+                    <input type="color" id="prop_fundo" value="#3b82f6" aria-label="Cor de preenchimento">
+                    <label class="check"><input type="checkbox" id="prop_sem_fundo"> Sem preenchimento</label>
+                </div>
+            </section>
+
+            <section class="painel-grupo">
+                <h3>Contorno</h3>
+                <div class="cor-linha">
+                    <input type="color" id="prop_contorno" value="#26251f" aria-label="Cor do contorno">
+                    <label class="check"><input type="checkbox" id="prop_sem_contorno"> Sem contorno</label>
+                </div>
+                <label class="mini">Espessura<input type="number" id="prop_espessura" value="2" min="0.5" step="0.5"></label>
+            </section>
+
+            <section class="painel-grupo" id="grp_texto" hidden>
+                <h3>Texto</h3>
+                <textarea id="prop_texto" rows="2" spellcheck="false" placeholder="Conteúdo do texto"></textarea>
+                <label class="mini">Tamanho da fonte<input type="number" id="prop_fonte" value="24" min="4" step="1"></label>
+            </section>
+
+            <p class="painel-vazio" id="painel_vazio">Nada selecionado.<br>Desenhe uma forma para editar.</p>
+        </aside>
+    </div>
+
+    <footer class="statusbar">
+        <span id="st_zoom">100%</span>
+        <span id="st_pos">x 0 · y 0</span>
+        <span id="st_formas">0 formas</span>
+        <span class="st-atalhos" title="Atalhos de ferramentas">V · R · E · L · T · H</span>
+    </footer>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <script src="assets/js/editor.js"></script>
+    <script src="assets/js/app.js"></script>
+</body>
+</html>
