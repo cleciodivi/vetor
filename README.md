@@ -11,7 +11,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/editor-atual.png" alt="Editor VETOR em funcionamento" width="720">
+  <img src="docs/demo.gif" alt="Editor VETOR em funcionamento" width="720">
 </p>
 
 <p align="center">
