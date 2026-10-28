@@ -104,11 +104,12 @@ vetor/
 
 Toda ajuda é bem-vinda — code, teste, tradução, design ou ideia.
 
-1. Abra uma issue descrevendo o que quer fazer (ou pegue uma aberta)
-2. Faça um fork e um branch (`feat/minha-feature`)
-3. Envie o pull request
+1. Abra uma [issue](https://github.com/cleciodivi/vetor/issues) descrevendo o que quer fazer ou escolha uma aberta.
+2. Faça um fork e crie uma branch (`feat/minha-feature` ou `fix/meu-bug`).
+3. Rode `node tests/test-editor.js` e confira a alteração no navegador.
+4. Envie um pull request com a descrição da mudança e os testes realizados.
 
-Tente manter o código do jeito que está: JS vanilla, sem build, sem dependências — é o que mantém o projeto simples de contribuir.
+Consulte [CONTRIBUTING.md](CONTRIBUTING.md) para as orientações completas e siga nosso [Código de Conduta](.github/CODE_OF_CONDUCT.md). Tente manter o código simples: JS vanilla, sem build e sem dependências.
 
 ## Licença
 
